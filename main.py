@@ -19,11 +19,27 @@ class Player(py.sprite.Sprite):
         self.laser_shoot_time=0
         self.cooldown_duration=400
 
-
         
+
+
 
         #mask
         self.mask=py.mask.from_surface(self.image)
+
+    def clamp_player_position(self):
+    # Clamp the player's x position between the left and right edges of the screen
+        if player.rect.x < 0:
+            #left side
+            player.rect.x = 0
+            #right side
+        elif player.rect.x + player.rect.width > WINDOW_WIDTH:
+            player.rect.x = WINDOW_WIDTH - player.rect.width
+
+    # Clamp the player's y position between the top and bottom edges of the screen
+        if player.rect.y < 0:
+            player.rect.y = 0
+        elif player.rect.y + player.rect.height > WINDOW_HEIGHT:
+            player.rect.y = WINDOW_HEIGHT - player.rect.height
 
     def laser_timer(self):
         if not self.can_shoot:
@@ -33,10 +49,13 @@ class Player(py.sprite.Sprite):
 
     def update(self,dt):
         keys=py.key.get_pressed()
-        self.direction.x=int(keys[py.K_RIGHT]) - int(keys[py.K_LEFT])
+        self.direction.x=int(keys[py.K_RIGHT]) - int(keys[py.K_LEFT]) 
         self.direction.y=int(keys[py.K_DOWN]) - int(keys[py.K_UP])
         self.direction=self.direction.normalize() if self.direction else self.direction
         self.rect.center +=self.direction*self.speed*dt
+        self.clamp_player_position()
+       
+
 
         recent_keys=py.key.get_just_pressed()
         if recent_keys[py.K_SPACE]and self.can_shoot:
@@ -226,12 +245,13 @@ def draw_start_menu():
 def game_over():
    display_surface.fill((0, 0, 0))
    font = py.font.SysFont('arial', 40)
-   title = font.render('Game_Over', True, (255, 255, 255))
+   title = font.render(f'Game_Over, score: {score}', True, (255, 255, 255))
    restart_button = font.render('R - Restart', True, (255, 255, 255))
    quit_button = font.render('Q - Quit', True, (255, 255, 255))
    display_surface.blit(title, (WINDOW_WIDTH/2 - title.get_width()/2, WINDOW_HEIGHT/4 - title.get_height()/2))
    display_surface.blit(restart_button, (WINDOW_WIDTH/2 - restart_button.get_width()/2, WINDOW_HEIGHT/2))
    display_surface.blit(quit_button, (WINDOW_WIDTH/2 - quit_button.get_width()/2, WINDOW_HEIGHT/2.5 + quit_button.get_height()/2))
+   player.rect.center = (WINDOW_WIDTH/2, WINDOW_HEIGHT/2)
    py.display.update()
 
 while running:
@@ -249,6 +269,7 @@ while running:
         keys = py.key.get_pressed()
         if keys[py.K_SPACE]:
             game_state = "game"
+            score=0
     elif game_state == "game":
         all_sprites.update(dt)
         collision()
@@ -263,7 +284,7 @@ while running:
     
     elif game_state == "game_over":
        game_over()
-       score=0
+       
        keys = py.key.get_pressed()
        if keys[py.K_r]:
            game_state = "start_menu"
