@@ -26,7 +26,7 @@ class Player(py.sprite.Sprite):
         #mask
         self.mask=py.mask.from_surface(self.image)
 
-    def clamp_player_position(self):
+    def border_collision(self):
     # Clamp the player's x position between the left and right edges of the screen
         if player.rect.x < 0:
             #left side
@@ -53,7 +53,7 @@ class Player(py.sprite.Sprite):
         self.direction.y=int(keys[py.K_DOWN]) - int(keys[py.K_UP])
         self.direction=self.direction.normalize() if self.direction else self.direction
         self.rect.center +=self.direction*self.speed*dt
-        self.clamp_player_position()
+        self.border_collision()
        
 
 
@@ -192,15 +192,6 @@ for i in range(20):
 
 player=Player(all_sprites)
 
-#importing an image
-# player_surf= py.image.load('images\player.png').convert_alpha()
-# player_rect = player_surf.get_frect(center=(WINDOW_WIDTH/2,WINDOW_HEIGHT/2))
-# player_direction=py.math.Vector2(0,0)
-# player_speed=200
-
-#stars
-# star_surf=py.image.load('images\star.png').convert_alpha()
-# stars = [(random.randint(0, WINDOW_WIDTH), random.randint(0, WINDOW_HEIGHT)) for _ in range(20)]
 
 
 #Meteors
@@ -235,7 +226,7 @@ game_state = "start_menu"
 def draw_start_menu():
    display_surface.fill((0, 0, 0))
    font = py.font.SysFont('arial', 40)
-   title = font.render('My Game', True, (255, 255, 255))
+   title = font.render('Spaces shooter', True, (255, 255, 255))
    start_button = font.render('Start', True, (255, 255, 255))
    display_surface.blit(title, (WINDOW_WIDTH/2 - title.get_width()/2, WINDOW_HEIGHT/4 - title.get_height()/2))
    display_surface.blit(start_button, (WINDOW_WIDTH/2 - start_button.get_width()/2, WINDOW_HEIGHT/2))
